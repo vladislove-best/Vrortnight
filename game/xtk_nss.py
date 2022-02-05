@@ -1,8 +1,7 @@
 import pygame 
 import random
 
-# self.object_type = bulet_types [random.randint(0,2)] 
-
+weapons = []
 stages_library =[]
 stages_library_flip = []
 weapon_list = []
@@ -138,33 +137,38 @@ def delete_fo():
         else:
             i+=1
 class weapon:
-    def __init__(self, weapon_type):
-        self.pos_y = 0
-        self.pos_x = 0
-        self.type = weapon_type
-        self.img = pygame.image.load('weapon_' + self.type + '.jpg')
+    def __init__(self, weapon_type,pos_x,pos_y):
+        self.type= weapon_type
+        self.pos_y = pos_y
+        self.pos_x = pos_x
+        print ('weapon_' + self.type + '.jpg')
+        self.img = pygame.image.load('weapon_' + self.type + '.png')
+        self.img = pygame.transform.scale(self.img, (60, 40))
+        if self.pos_x > display_width//2:
+            self.img = pygame.transform.flip(self.img, True, False)
         self.damage_dict = {'canon': 50}
-        self.damage = damage_dict[self.type]
+        self.damage = self.damage_dict[self.type]
         self.reloading_time_dict = {'canon': 75}
-        self.reloading_time = reloading_time_dict[self.type]
+        self.reloading_time = self.reloading_time_dict[self.type]
         self.bulets_dict = {'canon': 1}
-        self.bulets = bulets_dict[self.type]
+        self.bulets = self.bulets_dict[self.type]
         self.delay_dict = {'canon': 0}
-        self.delay = delay_dict[self.type]
+        self.delay = self.delay_dict[self.type]
         self.bulet_speed_dict = {'canon': 40}
-        self.bulet_speed = bulet_speed_dict[self.type]
+        self.bulet_speed = self.bulet_speed_dict[self.type]
         self.bulet_types_dict = {'canon': 'shells'}
-        self.bulets_type = bulet_types_dict[self.type]
-    
-    
-
+        self.bulets_type = self.bulet_types_dict[self.type]
+    def update(self):
+        gameDisplay.blit(self.img, (self.pos_x,self.pos_y))
 pygame.init()
 pygame.font.init()
 gameDisplay = pygame.display.set_mode((display_width, display_heigth))
+# for i in range (4):
+#     weapon_list.append(weapon)
+# weapons_view = pygame.image.load('weapon_canon.jpg')
 for i in range (4):
-    weapon_list.append(weapon)
-# weapons_view = pygame.image.load('weapon(1).png')
-weapon_list.append(weapon('rifle'))
+    weapon_list.append(weapon('canon',1000,150 + i* 160))
+    weapon_list.append(weapon('canon',335,150 + i* 160))
 player1 = player()
 player1_viwe = pygame.image.load('a0000723242_16.jpg')
 player1_viwe = pygame.transform.scale(player1_viwe, (player1.size, player1.size))
@@ -172,12 +176,9 @@ running = True
 FPS = 60
 clock = pygame.time.Clock()
 for i in range (4):
-    weapons.append(pygame.image.load('weapon('+str(random.randint(1,1))+').png'))
-for i in range (4):
     stages_library.append(pygame.image.load('stage('+str(random.randint(1,1))+').bmp'))
     stages_library_flip.append(pygame.image.load('stage_flip('+str(random.randint(1,1))+').bmp'))
 while running:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -201,11 +202,13 @@ while running:
         #     player1.action()
         ############################
     gameDisplay.blit(background, (0,0))
-    for bullet in bulet_list:
-        bullet.update()
+    # for bullet in bulet_list:
+    #     bullet.update()
     for i in range (len(stages_library)):
         gameDisplay.blit(stages_library[i], (910,520 - (160 * i)))
         gameDisplay.blit(stages_library_flip[i], (0,520 - (160 * i)))
+    for i in weapon_list:
+        i.update()
     player1.update()
     pygame.display.update()
     clock.tick(FPS)
